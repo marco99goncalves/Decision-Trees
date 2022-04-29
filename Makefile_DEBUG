@@ -1,0 +1,14 @@
+output: Main.o Util.o Data.o
+	g++ Main.o Util.o Data.o -Wall -g -o out
+
+Main.o: Main.cpp
+	g++ -c -g  Main.cpp
+
+Util.o: Util.cpp Util.h
+	g++ -c -g  Util.cpp
+
+Data.o: Data.cpp Data.h
+	c++ -c -g Data.cpp
+
+clean:
+	rm *.o out
