@@ -1,9 +1,8 @@
 #pragma once
 using namespace std;
 
-#define STRING 0
-#define INTEGER 1
-#define FLOAT 2
+#define CATEGORIC 0
+#define NUMERIC 1
 
 #include "Data.h"
 
@@ -22,4 +21,8 @@ double EntropyFormula(vector<int> &column, int total, int max_rows);
 double EntropyFormula(unordered_map<string, int> &column, int total);
 double GetSetEntropy(Data &data);
 double GetInformationGain(Data &data, int column, double set_entropy);
+
+void DiscretizeColumn(Data &data, int column);
+void GetColumnRanges(Data &data, int column, vector<pair<float, float>> &ranges);
+pair<float, float> ChooseRange(vector<pair<float, float>> &ranges, float value);
 }  // namespace Util

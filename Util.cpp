@@ -20,12 +20,6 @@ void Util::GetAttributes(Data &data) {
     for (auto att : data.table[0])
         data.attributes.push_back({att, {-1, {}}});
     data.table.erase(data.table.begin());
-
-    for (int col = 0; col < data.table[0].size(); col++) {
-        for (int row = 0; row < data.table.size(); row++) {
-            data.attributes[col].second.second.insert(data.table[row][col]);
-        }
-    }
 }
 
 unordered_map<string, unordered_map<string, int>> Util::GetColumnProbabilities(int column, Data &data) {
@@ -82,7 +76,7 @@ double Util::EntropyFormula(unordered_map<string, int> &column, int total) {
     double entropy = 0;
     for (auto &c : column) {
         if (c.second == 0)
-            return 0;
+            continue;
         entropy += -((c.second / (double)total) * log2(c.second / (double)total));
     }
     return entropy;
@@ -92,7 +86,7 @@ double Util::EntropyFormula(vector<int> &column, int total, int max_rows) {
     double entropy = 0;
     for (int c : column) {
         if (c == 0)
-            return 0;
+            continue;
         entropy += -((c / (double)total) * log2(c / (double)total));
     }
     return (total / (double)max_rows) * entropy;
@@ -107,34 +101,94 @@ double Util::GetInformationGain(Data &data, int column, double set_entropy) {
 void Util::BuildAttributesTypes(Data &data) {
     regex number_regex("^(-?[1-9]+\\d*([.]\\d+)?)$|^(-?0[.]\\d*[1-9]+)$|^0$|^0.0$");
     for (int col = 0; col < data.attributes.size(); col++) {
-        int integers = 0;
+        int numbers = 0;
         int strings = 0;
-        int floats = 0;
         int type;
         for (auto row : data.table) {
             if (regex_match(row[col], number_regex)) {
                 // It's a number
-                if (row[col].find(".") != string::npos)
-                    floats++;
-                else
-                    integers++;
+                numbers++;
             } else
                 strings++;
         }
 
-        if (strings == 0)
-            if (floats == 0)
-                type = INTEGER;
-            else
-                type = FLOAT;
+        if (strings == 0 && numbers > 6)
+            type = NUMERIC;
         else
-            type = STRING;
+            type = CATEGORIC;
 
         data.attributes[col].second.first = type;
 
-        // if (type != STRING)
-        //     Util::Discretize(data, col);
+        if (type != CATEGORIC)
+            Util::DiscretizeColumn(data, col);
     }
+
+    // Fill the possible values for a given attribute
+    for (int col = 0; col < data.attributes.size(); col++) {
+        for (int row = 0; row < data.table.size(); row++) {
+            data.attributes[col].second.second.insert(data.table[row][col]);
+        }
+    }
+}
+
+void Util::DiscretizeColumn(Data &data, int column) {
+    vector<pair<float, float>> ranges;
+    GetColumnRanges(data, column, ranges);
+
+    for (auto &row : data.table) {
+        stringstream ss;
+        pair<float, float> range = ChooseRange(ranges, stof(row[column]));
+        ss << "[" << range.first << ", " << range.second << "]";
+        row[column] = ss.str();
+    }
+}
+
+pair<float, float> Util::ChooseRange(vector<pair<float, float>> &ranges, float value) {
+    vector<pair<float, float>> possible_ranges;
+    for (auto range : ranges)
+        if (range.first <= value && value <= range.second)
+            possible_ranges.push_back(range);
+
+    int index = rand() % possible_ranges.size();
+    pair<float, float> r = possible_ranges[index];
+    return r;
+}
+
+void Util::GetColumnRanges(Data &data, int column, vector<pair<float, float>> &ranges) {
+    vector<pair<float, string>> values(data.table.size());
+
+    int max_precision = 0;
+    for (int row = 0; row < data.table.size(); row++) {
+        string number = data.table[row][column];
+        int dot_position = number.find(".");
+        if (dot_position != number.npos)
+            max_precision = max(max_precision, (int)(number.length() - dot_position - 1));
+
+        float t1 = stof(number);
+        string t2 = data.table[row][data.table[0].size() - 1];
+        values[row] = {t1, t2};
+    }
+
+    sort(values.begin(), values.end());
+
+    string current_class = values[0].second;
+    float min = INT_MIN;
+    float max = INT_MAX;
+    double precision_offset = pow(10, -(max_precision + 1)) * 5;
+    for (auto v : values) {
+        if (v.second != current_class) {
+            max = v.first - precision_offset;
+            ranges.push_back({min, max});
+            min = max;
+            current_class = v.second;
+        }
+    }
+    ranges.push_back({min, INT_MAX});
+    ranges[0].first = INT_MIN;
+
+    //  for (auto r : ranges)
+    // cout << r.first << " " << r.second << "\n";
+    //    cout << "-----------\n";
 }
 
 void Util::GetClasses(Data &data) {
