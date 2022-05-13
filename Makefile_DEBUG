@@ -1,5 +1,5 @@
-output: Main.o Util.o Data.o
-	g++ Main.o Util.o Data.o -Wall -g -o out
+output: Main.o Util.o Data.o Node.o
+	g++ Main.o Util.o Data.o Node.o -Wall -g -o out
 
 Main.o: Main.cpp
 	g++ -c -g  Main.cpp
@@ -8,7 +8,10 @@ Util.o: Util.cpp Util.h
 	g++ -c -g  Util.cpp
 
 Data.o: Data.cpp Data.h
-	c++ -c -g Data.cpp
+	g++ -c -g Data.cpp
+
+Node.o: Node.cpp Node.h
+	g++ -c -g Node.cpp
 
 clean:
 	rm *.o out
