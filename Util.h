@@ -19,7 +19,7 @@ unordered_map<string, unordered_map<string, int>> GetColumnProbabilities(int col
 double GetEntropy(unordered_map<string, unordered_map<string, int>> &matrix, Data &data, int column);
 double EntropyFormula(vector<int> &column, int total, int max_rows);
 double EntropyFormula(unordered_map<string, int> &column, int total);
-double GetSetEntropy(Data &data);
+double GetSetEntropy(Data &data, set<int> &allowed_rows);
 double GetInformationGain(Data &data, int column, double set_entropy);
 
 void DiscretizeColumn(Data &data, int column);

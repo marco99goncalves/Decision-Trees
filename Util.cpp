@@ -58,11 +58,16 @@ double Util::GetEntropy(unordered_map<string, unordered_map<string, int>> &matri
     return entropy;
 }
 
-double Util::GetSetEntropy(Data &data) {
+double Util::GetSetEntropy(Data &data, set<int> &allowed_rows) {
     unordered_map<string, int> count;
     for (auto &c : data.classes)
         count[c] = 0;
     int rows = 0;
+    for (auto itr : allowed_rows) {
+        auto row = data.table[itr];
+        count[row[row.size() - 1]]++;
+        rows++;
+    }
     for (auto row : data.table) {
         count[row[row.size() - 1]]++;
         rows++;
