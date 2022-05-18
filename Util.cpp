@@ -22,13 +22,20 @@ void Util::GetAttributes(Data &data) {
     data.table.erase(data.table.begin());
 }
 
-unordered_map<string, unordered_map<string, int>> Util::GetColumnProbabilities(int column, Data &data) {
+double Util::GetInformationGain(Data &data, int column, double set_entropy, set<int> &allowed_rows) {
+    auto column_probabilities = GetColumnProbabilities(column, data, allowed_rows);
+    double column_entropy = GetEntropy(column_probabilities, data, column);
+    return (set_entropy - column_entropy);
+}
+
+unordered_map<string, unordered_map<string, int>> Util::GetColumnProbabilities(int column, Data &data, set<int> &allowed_rows) {
     // {row label, classe} = number
     unordered_map<string, unordered_map<string, int>> value_classes;
     for (const auto &elem : data.classes)
         value_classes[elem];
 
-    for (auto row : data.table) {
+    for (auto i_row : allowed_rows) {
+        auto row = data.table[i_row];
         value_classes[row[row.size() - 1]][row[column]]++;
         for (const auto &elem : data.classes)
             value_classes[elem][row[column]];
@@ -95,12 +102,6 @@ double Util::EntropyFormula(vector<int> &column, int total, int max_rows) {
         entropy += -((c / (double)total) * log2(c / (double)total));
     }
     return (total / (double)max_rows) * entropy;
-}
-
-double Util::GetInformationGain(Data &data, int column, double set_entropy) {
-    auto column_probabilities = GetColumnProbabilities(column, data);
-    double column_entropy = GetEntropy(column_probabilities, data, column);
-    return (set_entropy - column_entropy);
 }
 
 void Util::BuildAttributesTypes(Data &data) {

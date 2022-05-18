@@ -20,16 +20,15 @@ int main(int argc, char** argv) {
     // }
 
     set<int> allowed_rows = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-    set<int> used_columns = {};
+    set<int> allowed_cols = {0, 1, 2};
 
-    unordered_map<string, unordered_map<string, int>> matrix = Util::GetColumnProbabilities(0, data);
     double set_entropy = Util::GetSetEntropy(data, allowed_rows);
     cout << "Set Entropy: " << set_entropy << "\n";
 
     // { coluna, information_gain}
     pair<int, double> best_attribute = {-1, -1};
     for (int col = 0; col < data.attributes.size() - 1; col++) {
-        double information_gain = Util::GetInformationGain(data, col, set_entropy);
+        double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
         if (information_gain > best_attribute.second)
             best_attribute = {col, information_gain};
         cout << data.attributes[col].first << ": " << information_gain << "\n";
@@ -38,13 +37,17 @@ int main(int argc, char** argv) {
     // Chamar Util::ID3(data, best_attribute.first)
 
     allowed_rows = {1, 3, 4, 6, 7, 8, 11, 12};
-    used_columns = {2};
+    allowed_cols = {0, 1};
 
     set_entropy = Util::GetSetEntropy(data, allowed_rows);
+    cout << "\n-----------------\n";
     cout << "Set Entropy: " << set_entropy << "\n";
-    // for (int col = 0; col < data.attributes.size() - 1; col++) {
-    //     double information_gain = Util::GetInformationGain(data, col, set_entropy);
-    // }
+    for (auto col : allowed_cols) {
+        double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
+        if (information_gain > best_attribute.second)
+            best_attribute = {col, information_gain};
+        cout << data.attributes[col].first << ": " << information_gain << "\n";
+    }
 
     // cout << data.attributes[best_attribute.first].first << " " << best_attribute.second << "\n";
     return 0;
