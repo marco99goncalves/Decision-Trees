@@ -75,10 +75,6 @@ double Util::GetSetEntropy(Data &data, set<int> &allowed_rows) {
         count[row[row.size() - 1]]++;
         rows++;
     }
-    for (auto row : data.table) {
-        count[row[row.size() - 1]]++;
-        rows++;
-    }
 
     return EntropyFormula(count, rows);
 }

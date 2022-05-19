@@ -22,6 +22,8 @@ double EntropyFormula(unordered_map<string, int> &column, int total);
 double GetSetEntropy(Data &data, set<int> &allowed_rows);
 double GetInformationGain(Data &data, int column, double set_entropy, set<int> &allowed_rows);
 
+
+
 void DiscretizeColumn(Data &data, int column);
 void GetColumnRanges(Data &data, int column, vector<pair<float, float>> &ranges);
 pair<float, float> ChooseRange(vector<pair<float, float>> &ranges, float value);
