@@ -19,8 +19,14 @@ int main(int argc, char** argv) {
     //     cout << '\n';
     // }
 
-    set<int> allowed_rows = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-    set<int> allowed_cols = {0, 1, 2};
+    set<int> allowed_rows;
+    set<int> allowed_cols;
+
+    for (int i = 0; i < data.table.size(); i++)
+        allowed_rows.insert(i);
+
+    for (int i = 0; i < data.attributes.size(); i++)
+        allowed_cols.insert(i);
 
     double set_entropy = Util::GetSetEntropy(data, allowed_rows);
     cout << "Set Entropy: " << set_entropy << "\n";
@@ -36,18 +42,18 @@ int main(int argc, char** argv) {
 
     // Chamar Util::ID3(data, best_attribute.first)
 
-    allowed_rows = {1, 3, 4, 6, 7, 8, 11, 12};
-    allowed_cols = {0, 1};
+    // allowed_rows = {1, 3, 4, 6, 7, 8, 11, 12};
+    // allowed_cols = {0, 1};
 
-    set_entropy = Util::GetSetEntropy(data, allowed_rows);
-    cout << "\n-----------------\n";
-    cout << "Set Entropy: " << set_entropy << "\n";
-    for (auto col : allowed_cols) {
-        double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
-        if (information_gain > best_attribute.second)
-            best_attribute = {col, information_gain};
-        cout << data.attributes[col].first << ": " << information_gain << "\n";
-    }
+    // set_entropy = Util::GetSetEntropy(data, allowed_rows);
+    // cout << "\n-----------------\n";
+    // cout << "Set Entropy: " << set_entropy << "\n";
+    // for (auto col : allowed_cols) {
+    //     double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
+    //     if (information_gain > best_attribute.second)
+    //         best_attribute = {col, information_gain};
+    //     cout << data.attributes[col].first << ": " << information_gain << "\n";
+    // }
 
     // cout << data.attributes[best_attribute.first].first << " " << best_attribute.second << "\n";
     return 0;
