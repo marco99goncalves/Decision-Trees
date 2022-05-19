@@ -103,13 +103,19 @@ double Util::EntropyFormula(vector<int> &column, int total, int max_rows) {
 void Util::BuildAttributesTypes(Data &data) {
     regex number_regex("^(-?[1-9]+\\d*([.]\\d+)?)$|^(-?0[.]\\d*[1-9]+)$|^0$|^0.0$");
     for (int col = 0; col < data.attributes.size(); col++) {
+        unordered_set<double> numbers_set;
         int numbers = 0;
         int strings = 0;
         int type;
         for (auto row : data.table) {
             if (regex_match(row[col], number_regex)) {
                 // It's a number
-                numbers++;
+                double number = stod(row[col]);
+                if (numbers_set.find(number) == numbers_set.end()) {
+                    // number has been seen before
+                    numbers_set.insert(number);
+                    numbers++;
+                }
             } else
                 strings++;
         }
@@ -131,6 +137,35 @@ void Util::BuildAttributesTypes(Data &data) {
             data.attributes[col].second.second.insert(data.table[row][col]);
         }
     }
+}
+
+map<string, int> Util::CountExampleClasses(Data &data, set<int> &allowed_rows) {
+    map<string, int> m;
+    for (auto r : allowed_rows)
+        m[data.table[r][data.attributes.size() - 1]]++;
+
+    return m;
+}
+
+void Util::UpdateAllowedRowsAndCols(Data &data, int column, string target_value, set<int> &allowed_rows, set<int> &allowed_cols) {
+    for (int i = 0; i < data.table.size(); i++) {
+        if (data.table[i][column] != target_value)
+            allowed_rows.erase(i);
+    }
+
+    allowed_cols.erase(column);
+}
+
+// Return: {coluna, information_gain}
+pair<int, double> Util::GetBestAttribute(Data &data, set<int> &allowed_cols, set<int> &allowed_rows, double set_entropy) {
+    pair<int, double> best_attribute = {-1, -1};
+    for (auto col : allowed_cols) {
+        double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
+        if (information_gain > best_attribute.second)
+            best_attribute = {col, information_gain};
+        // cout << data.attributes[col].first << ": " << information_gain << "\n";
+    }
+    return best_attribute;
 }
 
 void Util::DiscretizeColumn(Data &data, int column) {

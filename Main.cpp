@@ -1,9 +1,12 @@
 #include <bits/stdc++.h>
 #include "Data.h"
 #include "Util.h"
+#include "Node.h"
 using namespace std;
 
-int main(int argc, char** argv) {
+void ID3(Data &data, Node &current_node);
+
+int main(int argc, char **argv) {
     srand(time(NULL));
 
     Data data;
@@ -22,39 +25,61 @@ int main(int argc, char** argv) {
     set<int> allowed_rows;
     set<int> allowed_cols;
 
+    // Inicializar as rows e colunas que vão ser usadas
     for (int i = 0; i < data.table.size(); i++)
         allowed_rows.insert(i);
-
-    for (int i = 0; i < data.attributes.size(); i++)
+    for (int i = 0; i < data.attributes.size() - 1; i++)
         allowed_cols.insert(i);
 
     double set_entropy = Util::GetSetEntropy(data, allowed_rows);
-    cout << "Set Entropy: " << set_entropy << "\n";
 
-    // { coluna, information_gain}
-    pair<int, double> best_attribute = {-1, -1};
-    for (int col = 0; col < data.attributes.size() - 1; col++) {
-        double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
-        if (information_gain > best_attribute.second)
-            best_attribute = {col, information_gain};
-        cout << data.attributes[col].first << ": " << information_gain << "\n";
+    cout << "Set Entropy: " << set_entropy << "\n";
+    pair<int, double> best_attribute = Util::GetBestAttribute(data, allowed_cols, allowed_rows, set_entropy);
+    shared_ptr<Node> root = make_shared<Node>(data.attributes[best_attribute.first].first, allowed_rows, allowed_cols);
+    root->attribute_column = best_attribute.first;
+    root->parent = nullptr;
+    ID3(data, *root);
+
+    return 0;
+}
+
+void ID3(Data &data, Node &current_node) {
+    cout << current_node.attribute << "\n";
+    map<string, int> m = Util::CountExampleClasses(data, current_node.allowed_rows);
+    int max_value;
+    for (auto itr : m) {
+        if (itr.second > max_value) {
+            current_node.most_common_attribute = itr.first;
+            max_value = itr.second;
+        }
     }
 
-    // Chamar Util::ID3(data, best_attribute.first)
+    if (m.size() == 1) {
+        // Create leaf
+        current_node.attribute = m.begin()->first;
+        return;
+    } else if (m.size() == 0) {
+        current_node.most_common_attribute = current_node.parent->most_common_attribute;
+        current_node.attribute = current_node.most_common_attribute;
+        cout << current_node.attribute << ":  Mae estou aqui\n";
+        return;
+    }
 
-    // allowed_rows = {1, 3, 4, 6, 7, 8, 11, 12};
-    // allowed_cols = {0, 1};
+    // Recursao
+    for (auto attribute : data.attributes[current_node.attribute_column].second.second) {
+        set<int> next_node_allowed_rows = current_node.allowed_rows;
+        set<int> next_node_allowed_cols = current_node.allowed_cols;
+        Util::UpdateAllowedRowsAndCols(data, current_node.attribute_column, attribute, next_node_allowed_rows, next_node_allowed_cols);
+        double set_entropy = Util::GetSetEntropy(data, next_node_allowed_rows);
 
-    // set_entropy = Util::GetSetEntropy(data, allowed_rows);
-    // cout << "\n-----------------\n";
-    // cout << "Set Entropy: " << set_entropy << "\n";
-    // for (auto col : allowed_cols) {
-    //     double information_gain = Util::GetInformationGain(data, col, set_entropy, allowed_rows);
-    //     if (information_gain > best_attribute.second)
-    //         best_attribute = {col, information_gain};
-    //     cout << data.attributes[col].first << ": " << information_gain << "\n";
-    // }
+        // Get best attribute for this branch
+        pair<int, double> best_attribute = Util::GetBestAttribute(data, next_node_allowed_cols, next_node_allowed_rows, set_entropy);
 
-    // cout << data.attributes[best_attribute.first].first << " " << best_attribute.second << "\n";
-    return 0;
+        shared_ptr<Node> next_node = make_shared<Node>(data.attributes[best_attribute.first].first, next_node_allowed_rows, next_node_allowed_cols);
+        next_node->attribute_column = best_attribute.first;
+        next_node->parent = &current_node;
+
+        current_node.children.push_back({next_node, attribute});
+        ID3(data, *next_node);
+    }
 }
