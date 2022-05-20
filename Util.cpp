@@ -59,7 +59,8 @@ double Util::GetEntropy(unordered_map<string, unordered_map<string, int>> &matri
             column.push_back(cell);
             total += cell;
         }
-        entropy += Util::EntropyFormula(column, total, total_rows);
+        // Nao sei se posso por isto aqui ( na logica matematica... ) (pus o if total para nao dividir por zero)
+        if(total) entropy += Util::EntropyFormula(column, total, total_rows);
     }
 
     return entropy;
@@ -92,6 +93,10 @@ double Util::EntropyFormula(unordered_map<string, int> &column, int total) {
 
 double Util::EntropyFormula(vector<int> &column, int total, int max_rows) {
     double entropy = 0;
+    if(total == 0){
+        cout << "cannot divide by zero.. check entropy formula..\n";
+        exit(1);
+    }
     for (int c : column) {
         if (c == 0)
             continue;
@@ -142,7 +147,7 @@ void Util::BuildAttributesTypes(Data &data) {
 map<string, int> Util::CountExampleClasses(Data &data, set<int> &allowed_rows) {
     map<string, int> m;
     for (auto r : allowed_rows)
-        m[data.table[r][data.attributes.size() - 1]]++;
+        m[data.table[r][data.table[0].size() - 1]]++;
 
     return m;
 }

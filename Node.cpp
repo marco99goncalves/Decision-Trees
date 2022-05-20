@@ -4,6 +4,7 @@ vector<pair<shared_ptr<Node>, string>> children;
 string attribute;
 string most_common_attribute;
 Node *parent;
+string way_taken;
 
 set<int> allowed_rows;
 set<int> allowed_cols;
