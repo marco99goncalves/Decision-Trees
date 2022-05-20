@@ -60,7 +60,7 @@ double Util::GetEntropy(unordered_map<string, unordered_map<string, int>> &matri
             total += cell;
         }
         // Nao sei se posso por isto aqui ( na logica matematica... ) (pus o if total para nao dividir por zero)
-        if(total) entropy += Util::EntropyFormula(column, total, total_rows);
+        if(total > 0) entropy += Util::EntropyFormula(column, total, total_rows);
     }
 
     return entropy;
