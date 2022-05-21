@@ -30,4 +30,5 @@ map<string, int> CountExampleClasses(Data &data, set<int> &allowed_rows);
 void DiscretizeColumn(Data &data, int column);
 void GetColumnRanges(Data &data, int column, vector<pair<float, float>> &ranges);
 pair<float, float> ChooseRange(vector<pair<float, float>> &ranges, float value);
-}  // namespace Util
+void PrintTabs(int n);
+}// namespace Util

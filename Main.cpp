@@ -6,13 +6,30 @@ using namespace std;
 
 void ID3(Data &data, Node &current_node);
 
+void dfs_printing(Node &cur, int tabs){
+    if(cur.children.size() > 0){ // It's an attribute
+        if(cur.way_taken.size() > 0){ // Ignore the root
+            Util::PrintTabs(tabs-1);
+            cout << cur.way_taken << ":" << '\n';
+        }
+        Util::PrintTabs(tabs);
+        cout  << '<' << cur.attribute << '>' << '\n';
+    }
+    else { // It's the class
+        Util::PrintTabs(tabs-1);
+        cout << cur.way_taken << ": " << cur.attribute << '\n';
+    }
+    for(auto itr = cur.children.begin(); itr != cur.children.end(); ++itr){
+        dfs_printing(*itr->first, tabs+2);
+    }
+}
+
 void dfs(Node &cur, int level){
     cout << "level" << ": "  << level << " (" << cur.way_taken << ") " <<  cur.attribute << '\n';
     // cout << level << ": " << cur.attribute << '\n';
     // if(cur.children.size() == 0) exit(0);
     for(auto itr = cur.children.begin(); itr != cur.children.end(); ++itr){
         dfs(*itr->first, level+1);
-        // cout << '\n';
     }
 }
 
@@ -62,7 +79,7 @@ int main(int argc, char **argv) {
     int xd = system("clear");
     ID3(data, *root);
 
-    dfs(*root, 0); // Just to print the tree
+    dfs_printing(*root, 0); // Just to print the tree
     return 0;
 }
 

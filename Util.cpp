@@ -1,5 +1,12 @@
 #include "Util.h"
 
+void Util::PrintTabs(int n){
+    for(int i=0; i<n; ++i){
+        // cout << '\t'; // Fica um bocado diferente..
+        cout << "    ";
+    }
+}
+
 void Util::FillTable(Data &data, string filename) {
     fstream file(filename, ios::in);
     string line, word;
