@@ -1,7 +1,7 @@
 #include "Util.h"
 
-void Util::PrintTabs(int n){
-    for(int i=0; i<n; ++i){
+void Util::PrintTabs(int n) {
+    for (int i = 0; i < n; ++i) {
         // cout << '\t'; // Fica um bocado diferente..
         cout << "    ";
     }
@@ -67,7 +67,7 @@ double Util::GetEntropy(unordered_map<string, unordered_map<string, int>> &matri
             total += cell;
         }
         // Nao sei se posso por isto aqui ( na logica matematica... ) (pus o if total para nao dividir por zero)
-        if(total > 0) entropy += Util::EntropyFormula(column, total, total_rows);
+        if (total > 0) entropy += Util::EntropyFormula(column, total, total_rows);
     }
 
     return entropy;
@@ -100,7 +100,7 @@ double Util::EntropyFormula(unordered_map<string, int> &column, int total) {
 
 double Util::EntropyFormula(vector<int> &column, int total, int max_rows) {
     double entropy = 0;
-    if(total == 0){
+    if (total == 0) {
         cout << "cannot divide by zero.. check entropy formula..\n";
         exit(1);
     }
@@ -257,5 +257,84 @@ void Util::PrintTable(Data &data) {
         for (auto col : row)
             cout << col << ' ';
         cout << '\n';
+    }
+}
+
+void Util::ReadTestData(Data &training_data, Data &test_data, string filename) {
+    FillTable(test_data, filename);
+    GetAttributes(test_data);
+    GetClasses(test_data);
+    BuildAttributesTypesForTestData(training_data, test_data);
+}
+
+void Util::BuildAttributesTypesForTestData(Data &training_data, Data &test_data) {
+    regex number_regex("^(-?[1-9]+\\d*([.]\\d+)?)$|^(-?0[.]\\d*[1-9]+)$|^0$|^0.0$");
+    for (int col = 0; col < test_data.attributes.size(); col++) {
+        unordered_set<double> numbers_set;
+        int numbers = 0;
+        int strings = 0;
+        int type;
+        for (auto row : test_data.table) {
+            if (regex_match(row[col], number_regex)) {
+                // It's a number
+                double number = stod(row[col]);
+                if (numbers_set.find(number) == numbers_set.end()) {
+                    // number has been seen before
+                    numbers_set.insert(number);
+                    numbers++;
+                }
+            } else
+                strings++;
+        }
+
+        if (strings == 0 && numbers > 6)
+            type = NUMERIC;
+        else
+            type = CATEGORIC;
+
+        test_data.attributes[col].second.first = type;
+
+        if (type != CATEGORIC)
+            DiscretizeColumnTestData(training_data, test_data, col);
+    }
+
+    // Fill the possible values for a given attribute
+    for (int col = 0; col < test_data.attributes.size(); col++) {
+        for (int row = 0; row < test_data.table.size(); row++) {
+            test_data.attributes[col].second.second.insert(test_data.table[row][col]);
+        }
+    }
+}
+
+void Util::DiscretizeColumnTestData(Data &training_data, Data &test_data, int column) {
+    for (auto &row : test_data.table) {
+        row[column] = GetRandomRange(training_data, stod(row[column]), column);
+    }
+}
+
+string Util::GetRandomRange(Data &training_data, double value, int column) {
+    vector<string> possible_values;
+    for (auto range : training_data.attributes[column].second.second) {
+        int range_find = range.find(",");
+        double n1 = stod(range.substr(1, range_find - 1));
+        double n2 = stod(range.substr(range_find + 2, range.size() - range_find - 3));
+        if (n1 <= value && value <= n2)
+            possible_values.push_back(range);
+    }
+
+    return possible_values[rand() % possible_values.size()];
+}
+
+void Util::SearchTree(Node &node, vector<string> &row) {
+    if (node.children.size() == 0) {
+        // Leaf node
+        cout << node.attribute << "\n";
+        return;
+    }
+    for (auto child : node.children) {
+        if (child.second == row[node.attribute_column]) {
+            SearchTree(*child.first, row);
+            return;
+        }
     }
 }

@@ -5,6 +5,7 @@ using namespace std;
 #define NUMERIC 1
 
 #include "Data.h"
+#include "Node.h"
 
 namespace Util {
 // Fills the table with values from stdin
@@ -31,4 +32,11 @@ void DiscretizeColumn(Data &data, int column);
 void GetColumnRanges(Data &data, int column, vector<pair<float, float>> &ranges);
 pair<float, float> ChooseRange(vector<pair<float, float>> &ranges, float value);
 void PrintTabs(int n);
-}// namespace Util
+
+void ReadTestData(Data &training_data, Data &test_data, string filename);
+void BuildAttributesTypesForTestData(Data &training_data, Data &test_data);
+void DiscretizeColumnTestData(Data &training_data, Data &test_data, int column);
+string GetRandomRange(Data &training_data, double value, int column);
+
+void SearchTree(Node &node, vector<string> &row, int current_attribute);
+}  // namespace Util
