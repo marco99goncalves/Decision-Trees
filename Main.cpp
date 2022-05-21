@@ -77,9 +77,12 @@ int main(int argc, char **argv) {
     dfs_printing(*root, 0);  // Just to print the tree
 
     cout << "\n\n\n------------\n";
-
+    int i = 1;
     for (auto row : test_data.table) {
-        Util::SearchTree(*root, row, 0);
+        if (i++ == 10) {
+            cout << "";
+        }
+        Util::SearchTree(*root, row);
     }
     return 0;
 }
@@ -147,7 +150,7 @@ void ID3(Data &training_data, Node &current_node) {
             if (max1_value == -1) next_node->attribute = current_node.most_common_attribute;
             // ========================================================================================
 
-            current_node.children.push_back({next_node, "this should be it"});
+            current_node.children.push_back({next_node, attribute});
         } else {
             current_node.children.push_back({next_node, attribute});
             ID3(training_data, *next_node);

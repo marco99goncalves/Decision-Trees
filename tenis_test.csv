@@ -1,0 +1,15 @@
+Day,Outlook,Temperature,Humidity,Windy
+1,Sunny,Hot,High,False
+2,Sunny,Hot,High,True
+3,Overcast,Hot,High,False
+4,Rainy,Mild,High,False
+5,Rainy,Cool,Normal,False
+6,Rainy,Cool,Normal,True
+7,Overcast,Cool,Normal,True
+8,Sunny,Mild,High,False
+9,Sunny,Cool,Normal,False
+10,Rainy,Mild,Normal,False
+11,Sunny,Mild,Normal,True
+12,Overcast,Mild,High,True
+13,Overcast,Hot,Normal,False
+14,Rainy,Mild,High,True
