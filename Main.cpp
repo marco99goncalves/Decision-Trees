@@ -70,16 +70,16 @@ int main(int argc, char **argv) {
     root->parent = nullptr;
     ID3(training_data, *root);
 
+    cout << "\n\n============ Tree Structure ==============\n\n";
+
+
     dfs_printing(*root, 0);  // Just to print the tree
 
-    cout << "\n\n------------\n\n";
-    int i = 1;
+    cout << "\n\n============= Predicitions ==============\n\n";
     for (auto row : test_data.table) {
-        if (i++ == 10) {
-            cout << "";
-        }
         Util::SearchTree(*root, row);
     }
+    cout << "\n=========================================\n\n";
     return 0;
 }
 
