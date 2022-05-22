@@ -23,19 +23,6 @@ void dfs_printing(Node &cur, int tabs) {
     }
 }
 
-void table_printer(Data &training_data, set<int> &allowed_rows, set<int> &allowed_cols) {
-    for (int i = 0; i < training_data.table.size(); ++i) {
-        if (allowed_rows.find(i) == allowed_rows.end()) continue;
-
-        for (int j = 0; j < training_data.table[0].size(); ++j) {
-            if (allowed_cols.find(j) == allowed_cols.end()) continue;
-            cout << training_data.table[i][j] << ' ' << training_data.table[i][training_data.table[0].size() - 1];
-        }
-        cout << '\n';
-    }
-    cout << '\n';
-}
-
 int main(int argc, char **argv) {
     srand(time(NULL));
     int xd = system("clear");
