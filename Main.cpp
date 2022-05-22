@@ -23,16 +23,6 @@ void dfs_printing(Node &cur, int tabs) {
     }
 }
 
-void dfs(Node &cur, int level) {
-    cout << "level"
-         << ": " << level << " (" << cur.way_taken << ") " << cur.attribute << '\n';
-    // cout << level << ": " << cur.attribute << '\n';
-    // if(cur.children.size() == 0) exit(0);
-    for (auto itr = cur.children.begin(); itr != cur.children.end(); ++itr) {
-        dfs(*itr->first, level + 1);
-    }
-}
-
 void table_printer(Data &training_data, set<int> &allowed_rows, set<int> &allowed_cols) {
     for (int i = 0; i < training_data.table.size(); ++i) {
         if (allowed_rows.find(i) == allowed_rows.end()) continue;
@@ -48,6 +38,13 @@ void table_printer(Data &training_data, set<int> &allowed_rows, set<int> &allowe
 
 int main(int argc, char **argv) {
     srand(time(NULL));
+    int xd = system("clear");
+    if(argc < 3){
+        cout << "Error: Two .csv files must be provided as arguments\n";
+        cout << "Please provide the training file followed by the testing file:\n";
+        cout << "$ make && ./out training.csv testing.csv\n";
+        return EXIT_FAILURE;
+    }
 
     Data training_data;
     Data test_data;
@@ -71,12 +68,11 @@ int main(int argc, char **argv) {
     shared_ptr<Node> root = make_shared<Node>(training_data.attributes[best_attribute.first].first, allowed_rows, allowed_cols);
     root->attribute_column = best_attribute.first;
     root->parent = nullptr;
-    int xd = system("clear");
     ID3(training_data, *root);
 
     dfs_printing(*root, 0);  // Just to print the tree
 
-    cout << "\n\n\n------------\n";
+    cout << "\n\n------------\n\n";
     int i = 1;
     for (auto row : test_data.table) {
         if (i++ == 10) {
@@ -88,30 +84,22 @@ int main(int argc, char **argv) {
 }
 
 void ID3(Data &training_data, Node &current_node) {
-    // cout << current_node.attribute << "\n";
     map<string, int> m = Util::CountExampleClasses(training_data, current_node.allowed_rows);
-
-    // table_printer(training_data, current_node.allowed_rows, current_node.allowed_cols);
     int max_value = -1;
+    // Casos base
     for (auto itr : m) {  // get the max_value ( for the second case of recursion )
-        // cout << "ver: " << itr.first << ' ' << itr.second << '\n';
         if (itr.second > max_value) {
             current_node.most_common_attribute = itr.first;
             max_value = itr.second;
         }
     }
-    // cout << '\n';
     if (m.size() == 1) {  // All are yes / no  (or all have the same value)
         // Create leaf
-        // cout << "this should be a leaf..." << '\n' << '\n';
         current_node.attribute = m.begin()->first;
-        // current_node.attribute = "I am the evil basterd!\n";
         return;
     } else if (m.size() == 0) {  // The node is empty ( return to parent node )
         current_node.most_common_attribute = current_node.parent->most_common_attribute;
         current_node.attribute = current_node.most_common_attribute;
-        // current_node.attribute = "OLACARGO";
-        // cout << current_node.attribute << ":  Mae estou aqui\n";
         return;
     }
 
@@ -132,12 +120,10 @@ void ID3(Data &training_data, Node &current_node) {
 
         if (next_node_allowed_cols.size() < 1) {  // Neste caso não podemos dar split..
             // Logica seria escolher a melhor contagem neste caso
-            // table_printer(training_data, next_node_allowed_rows, next_node_allowed_cols);
             map<string, int> m1 = Util::CountExampleClasses(training_data, next_node_allowed_rows);
             string checker = "";
             int max1_value = -1;
             for (auto itr : m1) {  // get the max_value ( for the second case of recursion )
-                // cout << "ver: " << itr.first << ' ' << itr.second << '\n';
                 if (itr.second > max1_value) {
                     checker = itr.first;
                     max1_value = itr.second;
