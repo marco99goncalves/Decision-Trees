@@ -232,9 +232,8 @@ void Util::GetColumnRanges(Data &data, int column, vector<pair<float, float>> &r
             current_class = v.second;
         }
     }
-    ranges.push_back({min, INT_MAX});
-    ranges[0].first = INT_MIN;
-
+    ranges.push_back({min, values[values.size() - 1].first});
+    ranges[0].first = values[0].first;
     //  for (auto r : ranges)
     // cout << r.first << " " << r.second << "\n";
     //    cout << "-----------\n";

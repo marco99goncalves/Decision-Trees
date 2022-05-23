@@ -1,0 +1,41 @@
+[H[2J[3JSet Entropy: 0.985228
+
+
+============ Tree Structure ==============
+
+<Breathingissues>
+    BI:
+        <Fever>
+            HAS_FEVER: Pos
+            NO_FEVER:
+                <Cough>
+                    YES: Pos
+                    NO: Pos
+    noBI:
+        <Fever>
+            HAS_FEVER:
+                <Cough>
+                    YES: Neg
+                    NO: Neg
+            NO_FEVER: Neg
+
+
+============= Predicitions ==============
+
+Neg
+Pos
+Neg
+Pos
+Pos
+Neg
+Pos
+Pos
+Pos
+Neg
+Neg
+Pos
+Pos
+Neg
+
+=========================================
+

@@ -1,0 +1,39 @@
+[H[2J[3JSet Entropy: 1
+
+
+============ Tree Structure ==============
+
+<Pat>
+    None: No
+    Full:
+        <Hun>
+            No: No
+            Yes:
+                <Type>
+                    Italian: No
+                    Thai:
+                        <Fri>
+                            Yes: Yes
+                            No: No
+                    Burger: Yes
+                    French: No
+    Some: Yes
+
+
+============= Predicitions ==============
+
+Yes
+No
+Yes
+Yes
+No
+Yes
+No
+Yes
+No
+No
+No
+Yes
+
+=========================================
+

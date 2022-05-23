@@ -26,7 +26,7 @@ void dfs_printing(Node &cur, int tabs) {
 int main(int argc, char **argv) {
     srand(time(NULL));
     int xd = system("clear");
-    if(argc < 3){
+    if (argc < 3) {
         cout << "Error: Two .csv files must be provided as arguments\n";
         cout << "Please provide the training file followed by the testing file:\n";
         cout << "$ make && ./out training.csv testing.csv\n";
@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
     Util::ReadData(training_data, argv[1]);
     Util::ReadTestData(training_data, test_data, argv[2]);
 
+    // Util::PrintTable(training_data);
     set<int> allowed_rows;
     set<int> allowed_cols;
 
@@ -58,7 +59,6 @@ int main(int argc, char **argv) {
     ID3(training_data, *root);
 
     cout << "\n\n============ Tree Structure ==============\n\n";
-
 
     dfs_printing(*root, 0);  // Just to print the tree
 

@@ -1,0 +1,36 @@
+[H[2J[3JSet Entropy: 0.940286
+
+
+============ Tree Structure ==============
+
+<Outlook>
+    Rainy:
+        <Windy>
+            True: No
+            False: Yes
+    Overcast: Yes
+    Sunny:
+        <Humidity>
+            Normal: Yes
+            High: No
+
+
+============= Predicitions ==============
+
+No
+No
+Yes
+Yes
+Yes
+No
+Yes
+No
+Yes
+Yes
+Yes
+Yes
+Yes
+No
+
+=========================================
+
