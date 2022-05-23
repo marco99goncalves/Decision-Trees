@@ -337,4 +337,8 @@ void Util::SearchTree(Node &node, vector<string> &row) {
             return;
         }
     }
+
+    // If we got here, it means the attribute we're at doesn't exist in the training data
+    cout << "[ERROR]: " << row[node.attribute_column] << " attribute has not been seen in the training data.\n";
+    return;
 }
