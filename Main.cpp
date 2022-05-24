@@ -16,7 +16,7 @@ void dfs_printing(Node &cur, int tabs) {
         cout << '<' << cur.attribute << '>' << '\n';
     } else {  // It's the class
         Util::PrintTabs(tabs - 1);
-        cout << cur.way_taken << ": " << cur.attribute << '\n';
+        cout << cur.way_taken << ": " << cur.attribute << ' ' << '(' << cur.count << ')' << '\n';
     }
     for (auto itr = cur.children.begin(); itr != cur.children.end(); ++itr) {
         dfs_printing(*itr->first, tabs + 2);
@@ -57,7 +57,8 @@ int main(int argc, char **argv) {
     root->attribute_column = best_attribute.first;
     root->parent = nullptr;
     ID3(training_data, *root);
-
+    Util::UpdateCounter(*root, training_data);
+    
     cout << "\n\n============ Tree Structure ==============\n\n";
 
     dfs_printing(*root, 0);  // Just to print the tree
@@ -71,7 +72,6 @@ int main(int argc, char **argv) {
 }
 
 void ID3(Data &training_data, Node &current_node) {
-    // current_nodecount++;
     map<string, int> m = Util::CountExampleClasses(training_data, current_node.allowed_rows);
     int max_value = -1;
     // Casos base

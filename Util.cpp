@@ -341,3 +341,23 @@ void Util::SearchTree(Node &node, vector<string> &row) {
     cout << "[ERROR]: " << row[node.attribute_column] << " attribute has not been seen in the training data.\n";
     return;
 }
+
+void Util::UpdateCounter(Node &node, Data &data){
+    for (auto row : data.table) {
+        Util::UpdateCounter(node, row);
+    }
+}
+
+void Util::UpdateCounter(Node &node, vector<string> &row) {
+    if (node.children.size() == 0) {
+        // Leaf node
+        node.count++;
+        return;
+    }
+    for (auto child : node.children) {
+        if (child.second == row[node.attribute_column]) {
+            UpdateCounter(*child.first, row);
+            return;
+        }
+    }
+}

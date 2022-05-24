@@ -38,5 +38,8 @@ void BuildAttributesTypesForTestData(Data &training_data, Data &test_data);
 void DiscretizeColumnTestData(Data &training_data, Data &test_data, int column);
 string GetRandomRange(Data &training_data, double value, int column);
 
+void UpdateCounter(Node &node, Data &data);
+void UpdateCounter(Node &node, vector<string> &row);
+
 void SearchTree(Node &node, vector<string> &row);
 }  // namespace Util
