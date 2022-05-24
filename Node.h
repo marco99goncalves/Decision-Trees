@@ -8,6 +8,7 @@ class Node {
     vector<pair<shared_ptr<Node>, string>> children;
     string attribute;
     int attribute_column;
+    int count;
     string most_common_attribute;
     Node *parent;
     string way_taken;

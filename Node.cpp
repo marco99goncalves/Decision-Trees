@@ -5,11 +5,13 @@ string attribute;
 string most_common_attribute;
 Node *parent;
 string way_taken;
+int count;
 
 set<int> allowed_rows;
 set<int> allowed_cols;
 
 Node::Node(string attribute, set<int> &allowed_rows, set<int> &allowed_cols) {
+    this->count = 1;
     this->attribute = attribute;
     this->allowed_rows = allowed_rows;
     this->allowed_cols = allowed_cols;

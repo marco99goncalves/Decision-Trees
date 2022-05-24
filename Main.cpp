@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
 }
 
 void ID3(Data &training_data, Node &current_node) {
+    // current_nodecount++;
     map<string, int> m = Util::CountExampleClasses(training_data, current_node.allowed_rows);
     int max_value = -1;
     // Casos base
