@@ -204,7 +204,7 @@ pair<float, float> Util::ChooseRange(vector<pair<float, float>> &ranges, float v
 }
 
 void Util::GetColumnRanges(Data &data, int column, vector<pair<float, float>> &ranges) {
-    vector<pair<float, string>> values(data.table.size());
+    vector<pair<double, string>> values(data.table.size());
 
     int max_precision = 0;
     for (int row = 0; row < data.table.size(); row++) {
@@ -220,23 +220,22 @@ void Util::GetColumnRanges(Data &data, int column, vector<pair<float, float>> &r
 
     sort(values.begin(), values.end());
 
-    string current_class = values[0].second;
-    float min = INT_MIN;
-    float max = INT_MAX;
-    double precision_offset = pow(10, -(max_precision + 1)) * 5;
-    for (auto v : values) {
-        if (v.second != current_class) {
-            max = v.first - precision_offset;
-            ranges.push_back({min, max});
-            min = max;
-            current_class = v.second;
+    int rows_per_class = ceil(values.size() / (1 + 3.322 * log10(values.size())));
+
+    double min_value;
+    double max_value;
+    for (int i = 0; i < values.size(); i++) {
+        if (i % rows_per_class == 0) {
+            // Beggining of new interval
+            min_value = values[i].first;
+            max_value = values[i + rows_per_class - 1 >= values.size() ? values.size() - 1 : i + rows_per_class - 1].first;
         }
+        ranges.push_back({min_value, max_value});
+        i += rows_per_class - 1;
     }
-    ranges.push_back({min, values[values.size() - 1].first});
-    ranges[0].first = values[0].first;
-    //  for (auto r : ranges)
-    // cout << r.first << " " << r.second << "\n";
-    //    cout << "-----------\n";
+
+    ranges[ranges.size() - 1].second = INT_MAX;  // Make the last interval [value, +inf]
+    ranges[0].first = INT_MIN;                   // Make the first interval [-inf, value]
 }
 
 void Util::GetClasses(Data &data) {
@@ -324,7 +323,7 @@ string Util::GetRandomRange(Data &training_data, double value, int column) {
     return possible_values[rand() % possible_values.size()];
 }
 
-void Util::GetPrediction(Node &node, Data &data){
+void Util::GetPrediction(Node &node, Data &data) {
     for (auto row : data.table) {
         Util::SearchTree(node, row);
     }
@@ -348,7 +347,7 @@ void Util::SearchTree(Node &node, vector<string> &row) {
     return;
 }
 
-void Util::UpdateCounter(Node &node, Data &data){
+void Util::UpdateCounter(Node &node, Data &data) {
     for (auto row : data.table) {
         Util::UpdateCounter(node, row);
     }
@@ -368,7 +367,6 @@ void Util::UpdateCounter(Node &node, vector<string> &row) {
     }
 }
 
-
 void Util::PrintTree(Node &cur, int tabs) {
     if (cur.children.size() > 0) {       // It's an attribute
         if (cur.way_taken.size() > 0) {  // Ignore the root
@@ -385,7 +383,6 @@ void Util::PrintTree(Node &cur, int tabs) {
         PrintTree(*itr->first, tabs + 2);
     }
 }
-
 
 void Util::ID3(Data &training_data, Node &current_node) {
     map<string, int> m = Util::CountExampleClasses(training_data, current_node.allowed_rows);
