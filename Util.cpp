@@ -23,6 +23,12 @@ void Util::FillTable(Data &data, string filename) {
     }
 }
 
+void Util::GetPredictionArray(Node &node, Data &data, vector<string> &results) {
+    for (auto row : data.table) {
+        Util::SearchTreeGetArray(node, row, results);
+    }
+}
+
 void Util::GetAttributes(Data &data) {
     for (auto att : data.table[0])
         data.attributes.push_back({att, {-1, {}}});
@@ -123,8 +129,12 @@ void Util::BuildAttributesTypes(Data &data) {
             if (regex_match(row[col], number_regex)) {
                 // It's a number
                 double number = stod(row[col]);
+                if (row[col].find(".") != string::npos) {
+                    numbers += 7;  // grande roubo lmaos
+                }
+
                 if (numbers_set.find(number) == numbers_set.end()) {
-                    // number has been seen before
+                    // number hasnt been seen before
                     numbers_set.insert(number);
                     numbers++;
                 }
@@ -224,14 +234,11 @@ void Util::GetColumnRanges(Data &data, int column, vector<pair<float, float>> &r
 
     double min_value;
     double max_value;
-    for (int i = 0; i < values.size(); i++) {
-        if (i % rows_per_class == 0) {
-            // Beggining of new interval
-            min_value = values[i].first;
-            max_value = values[i + rows_per_class - 1 >= values.size() ? values.size() - 1 : i + rows_per_class - 1].first;
-        }
+    for (int i = 0; i < values.size(); i += rows_per_class) {
+        // Beggining of new interval
+        min_value = values[i > 0 ? i - 1 : i].first;
+        max_value = values[i + rows_per_class - 1 >= values.size() ? values.size() - 1 : i + rows_per_class - 1].first;
         ranges.push_back({min_value, max_value});
-        i += rows_per_class - 1;
     }
 
     ranges[ranges.size() - 1].second = INT_MAX;  // Make the last interval [value, +inf]
@@ -308,6 +315,8 @@ void Util::DiscretizeColumnTestData(Data &training_data, Data &test_data, int co
     for (auto &row : test_data.table) {
         row[column] = GetRandomRange(training_data, stod(row[column]), column);
     }
+    if (0)
+        cout << "ola";
 }
 
 string Util::GetRandomRange(Data &training_data, double value, int column) {
@@ -321,15 +330,6 @@ string Util::GetRandomRange(Data &training_data, double value, int column) {
     }
 
     return possible_values[rand() % possible_values.size()];
-}
-
-<<<<<<< HEAD
-void Util::GetPrediction(Node &node, Data &data) {
-=======
-void Util::GetPredictionArray(Node &node, Data &data, vector<string> &results) {
-    for (auto row : data.table) {
-        Util::SearchTreeGetArray(node, row, results);
-    }
 }
 
 void Util::SearchTreeGetArray(Node &node, vector<string> &row, vector<string> &results) {
@@ -350,8 +350,7 @@ void Util::SearchTreeGetArray(Node &node, vector<string> &row, vector<string> &r
     return;
 }
 
-void Util::GetPrediction(Node &node, Data &data){
->>>>>>> 945495eeb46a921d026ee9bf158812bc1e3241e4
+void Util::GetPrediction(Node &node, Data &data) {
     for (auto row : data.table) {
         Util::SearchTree(node, row);
     }
