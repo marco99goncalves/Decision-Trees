@@ -1,3 +1,6 @@
 .vscode
 *.o
 out
+train.csv
+test.csv
+expected
