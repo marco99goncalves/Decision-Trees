@@ -324,6 +324,30 @@ string Util::GetRandomRange(Data &training_data, double value, int column) {
     return possible_values[rand() % possible_values.size()];
 }
 
+void Util::GetPredictionArray(Node &node, Data &data, vector<string> &results) {
+    for (auto row : data.table) {
+        Util::SearchTreeGetArray(node, row, results);
+    }
+}
+
+void Util::SearchTreeGetArray(Node &node, vector<string> &row, vector<string> &results) {
+    if (node.children.size() == 0) {
+        // Leaf node
+        results.push_back(node.attribute);
+        return;
+    }
+    for (auto child : node.children) {
+        if (child.second == row[node.attribute_column]) {
+            SearchTreeGetArray(*child.first, row, results);
+            return;
+        }
+    }
+
+    // If we got here, it means the attribute we're at doesn't exist in the training data
+    cout << "[ERROR]: " << row[node.attribute_column] << " attribute has not been seen in the training data.\n";
+    return;
+}
+
 void Util::GetPrediction(Node &node, Data &data){
     for (auto row : data.table) {
         Util::SearchTree(node, row);
