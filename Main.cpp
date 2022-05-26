@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include "Data.h"
 #include "Util.h"
+#include <fstream>
 #include "Node.h"
 using namespace std;
 
@@ -42,15 +43,47 @@ int main(int argc, char **argv) {
     Util::ID3(training_data, *root);
     Util::UpdateCounter(*root, training_data);
     
-    cout << "\n\n============ Tree Structure ==============\n\n";
+    
+    if(argc == 3){
+        cout << "\n\n============ Tree Structure ==============\n\n";
 
-    Util::PrintTree(*root, 0);  // Just to print the tree
+        Util::PrintTree(*root, 0);  // Just to print the tree
 
-    cout << "\n\n============= Predicitions ==============\n\n";
+        cout << "\n\n============= Predictions ==============\n\n";
 
-    Util::GetPrediction(*root, test_data);
+        Util::GetPrediction(*root, test_data);
 
-    cout << "\n=========================================\n\n";
+        cout << "\n=========================================\n\n";
+    }
+
+    else{ // Caso de estarmos a ver os resultados...
+        int sum, value;
+        ifstream b_file (argv[3]);
+        
+        vector<string> checker;
+        while(!b_file.eof()){
+            string next;
+            b_file >> next;
+            checker.push_back(next);
+        } 
+
+        vector<string> results;
+        Util::GetPredictionArray(*root, test_data, results); // guarda os resultados
+
+        // Agora comparamos o checker aos resultados
+        int total = 0;
+        int hit = 0;
+
+        for(int i=0; i<(int)results.size(); ++i){
+            cout << "Result: " << results[i] << "  Expected: " << checker[i] << '\n';
+            hit += checker[i] == results[i];
+            ++total;
+        }
+
+        cout << "\nTrained the model using " << training_data.table.size() << " entries.\n";
+        cout << "Guessed right in " << hit << " of " << total << " testing entries.\n";
+        cout << "Sucess ratio: " << (double)hit / (double)total * 100 << '%' << '\n';
+    }
     return EXIT_SUCCESS;
 }
 

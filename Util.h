@@ -43,10 +43,10 @@ void UpdateCounter(Node &node, vector<string> &row);
 
 void GetPrediction(Node &node, Data &data);
 void SearchTree(Node &node, vector<string> &row);
-
+void GetPredictionArray(Node &node, Data &data, vector<string> &results);
+void SearchTreeGetArray(Node &node, vector<string> &row, vector<string> &results);
 
 void PrintTree(Node &cur, int tabs);
 void ID3(Data &training_data, Node &current_node); // Algoritmo de construção da árvore
-
 
 }  // namespace Util
